@@ -1,0 +1,510 @@
+<div class="jumbotron p-3">
+  <div class="card p-3 mb-3">
+    <div class="d-flex bd-highlight">
+      <div class="me-auto p-2 bd-highlight"><h3>QUẢN LÝ SÁCH</h3></div>
+      <div class="p-2 bd-highlight">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#createModal"
+        >
+          Thêm mới
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="card p-3 mb-3">
+    <form action="/admin/book" method="get">
+      <div class="d-flex justify-content-around align-items-center">
+        <div class="p-2">
+          <input
+            id="title"
+            name="title"
+            type="text"
+            class="form-control"
+            placeholder="Tên sách"
+            value="<%= filters.title %>"
+          />
+        </div>
+     
+          <div style="width: 250px;" class="p-2">
+            
+            <select id="category" name="category" class="form-select">
+              <option hidden value="">-Danh mục-</option>
+              <%
+              for ( var i = 0; i < listCategories.length; i++ )
+              {
+                  var selected = ( listCategories[i].id === filters.category[0] ) ? "selected" : "";
+                  
+                  %><option value="<%= listCategories[i].id %>" <%= selected %>><%= listCategories[i].name %></option><%
+              }
+              %>
+              </select>
+          </div>
+          <div style="width: 250px;" class="p-2">
+            
+            <select id="author" name="author" class="form-select">
+              <option hidden value="">-Tác giả-</option>
+              <%
+              for ( var i = 0; i < listAuthor.length; i++ )
+              {
+                  var selected = ( listAuthor[i].id === filters.author[0] ) ? "selected" : "";
+                  
+                  %><option value="<%= listAuthor[i].id %>" <%= selected %>><%= listAuthor[i].name %></option><%
+              }
+              %>
+              </select>
+          </div>
+          <div style="width: 250px;" class="p-2">
+  
+            <select
+              name="rate"
+              id="rate"
+              class="form-select"
+              aria-label="Select rate"
+            >
+              <option hidden value="">-Đánh giá-</option>
+              <option value=0 <%= filters.rate[0]===0 ? 'selected' : "" %>>0 sao</option>
+              <option value=1 <%= filters.rate[0]===1 ? 'selected' : "" %>>1 sao</option>
+              <option value=2 <%= filters.rate[0]===2 ? 'selected' : "" %>>2 sao</option>
+              <option value=3 <%= filters.rate[0]===3 ? 'selected' : "" %>>3 sao</option>
+              <option value=4 <%= filters.rate[0]===4 ? 'selected' : "" %>>4 sao</option>
+              <option value=5 <%= filters.rate[0]===5 ? 'selected' : "" %>>5 sao</option>
+            </select>
+          </div>
+        <div class="p-2">
+          <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            onclick="onClickResetProduct()"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <% if(data.length > 0) { %>
+  <table class="table table-bordered bg-white mt-3">
+    <thead>
+      <tr>
+        <th scope="col">Hình ảnh</th>
+        <th scope="col">Tên sản phẩm</th>
+        <th scope="col">Danh mục</th>
+        <th scope="col">Tác giả</th>
+        <th scope="col">Đánh giá</th>
+        <th scope="col">Giá</th>
+        <th scope="col">Trạng thái</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% data.forEach(function(item, index) { %>
+      <tr>
+        <td class="w-2">
+          <div class="text-center">
+            <img src="<%= item.imageUrl %>" height="50px" width="50px" />
+          </div>
+        </td>
+        <td
+          style="cursor: pointer"
+          class="w-10"
+          data-bs-toggle="tooltip"
+          data-bs-placement="right"
+          title="<%= item.title %>"
+        >
+          <span class="d-inline-block text-truncate" style="max-width: 200px">
+            <%= item.title %>
+          </span>
+        </td>
+        <td class="w-2"><%= item.category.name %></td>
+        <td scope="w-2"><%= item.author.name %></td>
+        <td class="w-2">
+          <% for (var j = 0; j < 5; j++){ %> 
+            <% if (j < item.rate){ %>
+              <i class="bi bi-star-fill" style="color: gold;"></i>
+            <% } else { %>
+              <span class="fa fa-star"></span>
+            <% } %> 
+          <% } %>
+        </td>
+        <td class="w-2">$ <%= item.price %></td>
+        <td class="w-2">
+          <% if (item.isActive) { %>
+            <span class="badge bg-success">Đang hoạt động</span>
+          <% } else { %>
+            <span class="badge bg-danger">Đã khóa</span>
+          <% } %>
+          
+        </td>
+        <td class="w-2">
+          <button
+            data-bs-toggle="modal"
+            data-bs-target="#editModal"
+            type="button"
+            class="btn btn-outline-primary"
+            onclick='editProduct("<%= item.id %>")'
+          >
+          <i class="bi bi-pencil-square"></i>
+          </button>
+          <button
+            onclick='deleteBook("<%= item.id %>")'
+            type="button"
+            class="btn btn-outline-danger"
+          >
+          <i class="bi bi-shield-lock"></i>
+          </button>
+          <button
+            onclick='activeBook("<%= item.id %>")'
+            type="button"
+            class="btn btn-outline-success"
+          >
+          <i class="bi bi-check-lg"></i>
+          </button>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  <nav aria-label="Page navigation example">
+    <ul class="pagination">
+      <li class="page-item">
+        <a class="page-link" href="#" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      <% for(var i=1; i <= pages; i++) { %>
+        <% var isActived = ( i === currentPage ) ? "active" : ""; %>
+      <li class="page-item <%= isActived %>">
+        <form action="/admin/book" method="get">
+          <input type="hidden" name="page" value="<%= i %>"/>
+          <input name="name" type="hidden" value="<%= filters.title %>" />
+          <input name="rate" type="hidden" value="<%= filters.rate %>" />
+          <input name="category" type="hidden" value="<%= filters.category %>" />
+          <input name="author" type="hidden" value="<%= filters.author %>" />
+          <button type="submit" class="btn btn-link page-link"><%= i %></button>
+        </form>
+      </li>
+      <% }; %>
+      <li class="page-item">
+        <a class="page-link" href="#" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <% } else { %>
+    <div class="col-12">
+      <div class="card bg-light p-5">
+        <img
+          style="margin: auto"
+          width="200px"
+          height="200px"
+          src="https://cdn0.fahasa.com/skin//frontend/ma_vanese/fahasa/images/checkout_cart/ico_emptycart.svg"
+        />
+        <div class="fst-italic m-auto">
+          Không tìm thấy Sản phẩm phù hợp &#128517;
+        </div>
+      </div>
+    </div>
+  <% } %>
+  
+  <div
+    class="modal fade"
+    id="createModal"
+    tabindex="-1"
+    aria-labelledby="createModal"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="createModal">Thêm mới</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="container">
+            <div class="row">
+              <div class="col">
+                <div class="d-flex flex-column bd-highlight mb-3">
+                  <div class="p-2" style="text-align: center;"> <img src="" height="200px" width="200px" id="imageUpload" /></div>
+                  <div class="p-2" style="text-align: center;"><input type="file" name="file" id="image_file" />
+                    <button type="button" class="btn btn-outline-primary" onclick="uploadImage()">
+                      Lưu ảnh
+                    </button>
+                  </div>
+                </div>
+               
+                
+              </div>
+              <div class="col">
+                <form class="row g-3" action="/admin/book/create" method="post">
+                  <div class="col-md-12">
+                    
+                    <input
+                      style="display: none"
+                      type="text"
+                      class="form-control"
+                      name="imageUrl"
+                      id="imageUrl"
+                      value=""
+                    />
+                  </div>
+                  <div class="col-md-6">
+                    <label for="title" class="form-label">Tiêu đề sách</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="title"
+                      name="title"
+                      placeholder="Nhập tên"
+                      required
+                    />
+                  </div>
+                  <div class="col-6">
+                    <label for="price" class="form-label">Giá</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="price"
+                      name="price"
+                      placeholder="Nhập giá"
+                      min="0"
+                      required
+                    />
+                  </div>
+                  <div class="col-6">
+                    <label for="category" class="form-label">Danh mục</label>
+                    <select
+                      name="category"
+                      id="category"
+                      class="form-select"
+                      aria-label="Select ategory"
+                      required
+                    >
+                      <option>---</option>
+                      <% listCategories.forEach((item) => { %>
+                      <option value="<%= item.id %>"><%= item.name %></option>
+                      <% }) %>
+                    </select>
+                  </div>
+                  <div class="col-6">
+                    <label for="author" class="form-label">Tác giả</label>
+                    <select
+                      name="author"
+                      id="author"
+                      class="form-select"
+                      aria-label="Select author"
+                      required
+                    >
+                      <option>---</option>
+                      <% listAuthor.forEach((item) => { %>
+                      <option value="<%= item.id %>"><%= item.name %></option>
+                      <% }) %>
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <label for="limitDiscount" class="form-label">Gía giảm tối đa</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="limitDiscount"
+                      name="limitDiscount"
+                      placeholder="Nhập giá"
+                      min="0"
+                      required
+                    />
+                  </div>
+                  <div class="col-12">
+                    <label for="description" class="form-label">Mô tả</label>
+                    <textarea
+                      class="form-control"
+                      id="description"
+                      name="description"
+                      placeholder="Nhập mô tả"
+                      rows="3"
+                      required
+                    ></textarea>
+                  </div>
+      
+                  <div class="col-12">
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                      >
+                        Đóng
+                      </button>
+                      <button type="submit" class="btn btn-primary">Thêm</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div
+    class="modal fade"
+    id="editModal"
+    tabindex="-1"
+    aria-labelledby="editModal"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editModal">Chỉnh sửa</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col">
+              <div class="d-flex flex-column bd-highlight mb-3">
+                <div class="p-2" style="text-align: center;"> <img src="" height="200px" width="200px" id="imageUploadEdit" /></div>
+                <div class="p-2" style="text-align: center;"><input type="file" name="file" id="image_file_edit" />
+                  <button type="button" class="btn btn-outline-primary" onclick="uploadImageForEdit()">
+                    Lưu ảnh
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <form class="row g-3" action="/admin/book/edit" method="post">
+                <div class="col-md-12">
+                  <input
+                    style="display: none"
+                    type="text"
+                    class="form-control"
+                    name="imageUrl"
+                    id="imageUrlEdit"
+                    value=""
+                  />
+                </div>
+                <div>
+                  <input
+                    type="hidden"
+                    class="form-control"
+                    id="_idEdit"
+                    name="id"
+                    value=""
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label for="name" class="form-label">Tiêu đề</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="nameEdit"
+                    name="title"
+                    placeholder="Nhập tên"
+                    value=""
+                    required
+                  />
+                </div>
+                <div class="col-6">
+                  <label for="price" class="form-label">Giá</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="priceEdit"
+                    name="price"
+                    placeholder="Nhập giá"
+                    value=""
+                    min="0"
+                    required
+                  />
+                </div>
+                <div class="col-6">
+                  <label for="categoriEdit" class="form-label">Danh mục</label>
+                  <select
+                    name="category"
+                    id="categoriEdit"
+                    class="form-select"
+                    aria-label="Select category"
+                    required
+                  >
+                    <option>---</option>
+                    <% listCategories.forEach((item) => { %>
+                    <option value="<%= item.id %>"><%= item.name %></option>
+                    <% }) %>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label for="authorEdit" class="form-label">Tác giả</label>
+                  <select
+                    name="author"
+                    id="authorEdit"
+                    class="form-select"
+                    aria-label="Select author"
+                    required
+                  >
+                    <option>---</option>
+                    <% listAuthor.forEach((item) => { %>
+                    <option value="<%= item.id %>"><%= item.name %></option>
+                    <% }) %>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <label for="price" class="form-label">Gía giảm tối thiểu</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="limitDiscountEdit"
+                    name="limitDiscount"
+                    placeholder="Nhập giá"
+                    min="0"
+                    required
+                    value=""
+                  />
+                </div>
+                <div class="col-12">
+                  <label for="descriptionEdit" class="form-label">Mô tả</label>
+                  <textarea
+                    class="form-control"
+                    id="descriptionEdit"
+                    name="description"
+                    placeholder="Nhập mô tả"
+                    rows="3"
+                    value=""
+                    required
+                  ></textarea>
+                </div>
+    
+                <div class="col-12">
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-bs-dismiss="modal"
+                    >
+                      Đóng
+                    </button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

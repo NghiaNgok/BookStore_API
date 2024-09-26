@@ -1,0 +1,24 @@
+.checked {
+  color: #ffff00;
+}
+
+#myElement {
+  height: 300;
+  overflow-y: auto;
+}
+
+.nav-link {
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.nav-link.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}

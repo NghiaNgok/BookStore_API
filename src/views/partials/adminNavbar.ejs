@@ -1,0 +1,13 @@
+<nav class="navbar navbar-light bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand text-white"></a>
+
+    <div class="d-flex">
+      <form id="logoutForm" method="POST" action="/auth/logout" style="display: none;">
+      </form>
+      <a href="#" onclick="document.getElementById('logoutForm').submit();" class="btn btn-outline-secondary">
+        <i class="bi bi-box-arrow-in-right"></i> &nbsp;Đăng xuất
+      </a>
+    </div>
+  </div>
+</nav>

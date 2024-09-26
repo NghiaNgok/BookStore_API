@@ -1,0 +1,130 @@
+<div class="bg-light p-3">
+  <div class="container mt-3 p-3">
+    <nav style="
+        --bs-breadcrumb-divider: url(
+          &#34;data:image/svg + xml,
+          %3Csvgxmlns='http://www.w3.org/2000/svg'width='8'height='8'%3E%3Cpathd='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z'fill='currentColor'/%3E%3C/svg%3E&#34;
+        );
+      " aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="/admin/promotion">Quản lí chương trình giảm giá</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        Thêm mới
+      </li>
+    </ol>
+  </nav>
+    <div class="card p-3 mb-3">
+      <div class="d-flex bd-highlight">
+        <div class="me-auto p-2 bd-highlight">
+          <h3>THÊM MỚI CHƯƠNG TRÌNH GIẢM GIÁ</h3>
+        </div>
+        <div class="p-2 bd-highlight">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-6">
+        <form action="/admin/promotion/add" method="get">
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Search for book title..." aria-label="Book title" name="title" value="<%= searchValue %>" aria-describedby="button-addon2">
+            <button class="btn btn-primary" type="submit" id="button-addon2">Tìm kiếm</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <form action="/admin/promotion/create" method="post">
+      <div class="row">
+        <div class="col">
+          <div class="card">
+            <div class="card-header bg-danger text-white">
+              <div class="d-flex justify-content-between">
+                <h5>Sản phẩm áp dụng</h5>
+              </div>
+            </div>
+
+            <ul class="list-group" id="bookList" style="max-height: 400px; overflow: scroll;">
+              <% listBook.forEach(function(item, index) { %>
+                <li class="list-group-item d-flex book-item">
+                  <input class="form-check-input me-1" name="bookId" type="checkbox" value="<%= item.id %>"
+                    aria-label="...">
+                  <div class="d-flex">
+                    <img src="<%= item.imageUrl %>" height="60px" width="60px" />
+                    <div data-bs-toggle="tooltip" data-bs-placement="right" title="<%= item.title %>" class="d-block"
+                      style="margin-left: 10px;">
+                      <span class="d-inline-block text-truncate" style="max-width: 200px">
+                        <%= item.title %>
+                      </span>
+                      <div class="fw-bold">$ <%= item.price %>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+
+                  </div>
+                </li>
+                <% }); %>
+            </ul>
+          </div>
+
+        </div>
+        <div class="col">
+          <div class="card w-100" style="height: auto">
+            <div class="card-header bg-danger text-white">
+              <div class="d-flex justify-content-between">
+                <h5>Thông tin chương trình</h5>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="col-12">
+                <label for="name" class="form-label">Tiêu đề</label>
+                <input type="text" class="form-control" id="GiamGia" name="title"
+                  placeholder="Nhập tiêu đề của chương trình" required />
+              </div>
+              <div class="col-12">
+                <label for="name" class="form-label">Giảm giá</label>
+                <input type="number" class="form-control" id="GiamGia" name="discountPercent"
+                  placeholder="Nhập số phần trăm giảm giá" required />
+              </div>
+              <div class="col-6">
+                <label for="price" class="form-label">Thời gian bắt đầu</label>
+                <input type="date" class="form-control" id="startDate" name="startDate" required />
+              </div>
+              <div class="col-6">
+                <label for="price" class="form-label">Thời gian kết thúc</label>
+                <input type="date" class="form-control" id="endDate" name="endDate" required />
+              </div>
+
+              <div class="col-12">
+                <label for="description" class="form-label">Mô tả</label>
+                <textarea class="form-control" id="desc" name="description" placeholder="Nhập mô tả" rows="3"
+                  required></textarea>
+              </div>
+
+              <div class="col-12">
+                <button style="width: 100%; margin-top: 10px;" type="submit" class="btn btn-primary">Thêm mới</button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <script>
+    document.getElementById('searchInput').addEventListener('input', function () {
+      const searchValue = this.value.toLowerCase();
+      const bookItems = document.querySelectorAll('.book-item');
+
+      bookItems.forEach(function (item) {
+        const title = item.querySelector('.text-truncate').innerText.toLowerCase();
+        if (title.includes(searchValue)) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  </script>

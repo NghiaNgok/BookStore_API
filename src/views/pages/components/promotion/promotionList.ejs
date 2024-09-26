@@ -1,0 +1,152 @@
+<div class="jumbotron p-3">
+  <div class="card p-3 mb-3">
+    <div class="d-flex bd-highlight">
+      <div class="me-auto p-2 bd-highlight">
+        <h3>QUẢN LÝ CHƯƠNG TRÌNH KHUYẾN MÃI</h3>
+      </div>
+      <div class="p-2 bd-highlight">
+        <button type="button" class="btn btn-primary">
+          <a style="color: white ; text-decoration: none" href="promotion/add">
+            Thêm mới
+          </a>
+
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="card p-3 mb-3">
+    <form action="/admin/promotion" method="get">
+      <div class="d-flex justify-content-around align-items-center">
+        <div class="me-auto p-2" style="width: 80%;">
+          <input
+            id="pTitle"
+            name="title"
+            type="text"
+            class="form-control"
+            placeholder="Tiêu đề chương trình..."
+            value="<%= filters.title %>"
+          />
+        </div>
+
+        <div class="p-2">
+          <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            onclick="onClickResetPromotion()"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <% if(data.length> 0) { %>
+    <table class="table table-bordered bg-white mt-3">
+      <thead>
+        <tr>
+          <th scope="col-2">Mã chương trình</th>
+          <th scope="col-2">Tiêu đề chương trình</th>
+          <th scope="col-2">Start</th>
+          <th scope="col-2">End</th>
+          <th scope="col-1">Giảm giá</th>
+          <th scope="col-2">Trạng thái</th>
+          <th scope="col-2">Tình trạng</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% data.forEach(function(item, index) { %>
+          <tr>
+            <td scope="w-2">
+              <a href="/admin/promotion/<%= item.id %>">
+                <%= item.id %>
+              </a>
+            </td>
+            <td style="cursor: pointer" class="w-10" data-bs-toggle="tooltip" data-bs-placement="right">
+              <span class="d-inline-block text-truncate" style="max-width: 200px">
+                <%= item.title %>
+              </span>
+            </td>
+            <td scope="w-2">
+              <%= item.startDate %>
+            </td>
+            <td scope="w-2">
+              <%= item.expriedDate %>
+            </td>
+            <td scope="w-2">
+              <%= item.discountPercents %>%
+            </td>
+       
+            <td class="w-2">
+              <% if (item.isActive) { %>
+                <span class="badge bg-success">Đang kích hoạt</span>
+              <% } else { %>
+                <span class="badge bg-danger">Đang khóa</span>
+              <% } %>
+              
+            </td>
+            <td class="w-2">
+              <% if (item.isExp) { %>
+                <span class="badge bg-danger">Hết hạn</span>
+              <% } else { %>
+                <span class="badge bg-success">Còn hạn</span>
+              <% } %>
+              
+            </td>
+
+            <td class="w-2">
+              <button
+              onclick='activePromotion("<%= item.id %>")'
+              type="button"
+              class="btn btn-outline-success"
+            >
+            <i class="bi bi-check-lg"></i>
+            </button>
+            <button
+            onclick='deletePromotion("<%= item.id %>")'
+            type="button"
+            class="btn btn-outline-danger"
+          >
+          <i class="bi bi-shield-lock"></i>
+          </button>
+            </td>
+          </tr>
+          <% }); %>
+      </tbody>
+    </table>
+    <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        <li class="page-item">
+          <a class="page-link" href="#" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        <% for(var i=1; i <= pages; i++) { %>
+          <% var isActived = ( i === currentPage ) ? "active" : ""; %>
+        <li class="page-item <%= isActived %>">
+          <form action="/admin/promotion" method="get">
+            <input type="hidden" name="page" value="<%= i %>"/>
+            <input name="title" type="hidden" value="<%= filters.title %>"/>
+            <button type="submit" class="btn btn-link page-link"><%= i %></button>
+          </form>
+        </li>
+        <% }; %>
+        <li class="page-item">
+          <a class="page-link" href="#" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <% } else { %>
+      <div class="col-12">
+        <div class="card bg-light p-5">
+          <img style="margin: auto" width="200px" height="200px"
+            src="https://cdn0.fahasa.com/skin//frontend/ma_vanese/fahasa/images/checkout_cart/ico_emptycart.svg" />
+          <div class="fst-italic m-auto">
+            Không tìm thấy chương trình phù hợp &#128517;
+          </div>
+        </div>
+      </div>
+      <% } %>
+</div>

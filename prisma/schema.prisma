@@ -1,0 +1,186 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// generator nestgraphql {
+//   provider = "node node_modules/prisma-nestjs-graphql"
+//   output   = "../src/shared/prismagraphql"
+//   reExport = Directories
+// }
+
+enum OrderStatus {
+  INIT
+  INPROGRESS
+  APPROVED
+  REJECTED
+  SHIPING
+  DONE
+}
+
+enum PaymentMethod {
+  COD
+  ONLINE_BANKING
+}
+
+model Book {
+  id            String                      @id @default(uuid())
+  title         String
+  description   String?
+  price         Float
+  rate          Float
+  isOutofStock  Boolean                     @default(false)
+  imageUrl      String
+  isActive      Boolean                     @default(true)
+  categoryId    String
+  authorId      String
+  limitDiscount Int?                        @default(10)
+  createdAt     DateTime                    @default(now())
+  updatedAt     DateTime                    @default(now()) @updatedAt
+  cartDetail    CartItem[]
+  orderDetail   OrderItem[]
+  bookPromotion BookPromotionRelationship[]
+  review        Review[]
+
+  category Category @relation(fields: [categoryId], references: [id])
+  author   Author   @relation(fields: [authorId], references: [id])
+}
+
+model Author {
+  id        String   @id @default(uuid())
+  name      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  books     Book[]
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  books       Book[]
+}
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique()
+  fullName     String
+  username     String     @unique()
+  password     String
+  isActive     Boolean    @default(true)
+  phoneNumber  String
+  address      String
+  avatar       String?
+  refreshToken String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @default(now())
+  order        Order[]
+  review       Review[]
+  cartItem     CartItem[]
+}
+
+model Admin {
+  id           String   @id @default(uuid())
+  email        String   @unique()
+  username     String   @unique()
+  fullName     String
+  password     String
+  isActive     Boolean  @default(true)
+  phoneNumber  String?
+  address      String
+  avatar       String?
+  refreshToken String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+}
+
+model Order {
+  id            String        @id @default(uuid())
+  totalPrice    Float
+  paymentMethod PaymentMethod
+  userId        String
+  status        OrderStatus
+  paidAt        DateTime?
+  address       String?
+  phoneNumber   String?
+  customerName  String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now())
+  OrderDetail   OrderItem[]
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model OrderItem {
+  id       String @id @default(uuid())
+  orderId  String
+  bookId   String
+  quantity Int
+  price    Float?
+  book     Book   @relation(fields: [bookId], references: [id])
+  order    Order  @relation(fields: [orderId], references: [id])
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  bookId    String
+  userId    String
+  quantity  Int
+  price     Float?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  book Book @relation(fields: [bookId], references: [id])
+  User User @relation(fields: [userId], references: [id])
+}
+
+model Promotion {
+  id               String   @id @default(uuid())
+  title            String
+  description      String
+  startDate        DateTime
+  expriedDate      DateTime
+  discountPercents Int
+  isActive         Boolean
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @default(now())
+
+  bookPromotion BookPromotionRelationship[]
+}
+
+model BookPromotionRelationship {
+  id          String   @id @default(uuid())
+  bookId      String
+  promotionId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+
+  book      Book      @relation(fields: [bookId], references: [id])
+  promotion Promotion @relation(fields: [promotionId], references: [id])
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  content   String
+  rate      Int
+  bookId    String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  book Book @relation(fields: [bookId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
+
+model About {
+  id      String @id 
+  content String
+}

@@ -1,0 +1,79 @@
+<div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 280px; min-height: 100vh;">
+  <a href="/admin/dashboard" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+    <svg class="bi me-2" width="40" height="32">
+      <use xlink:href="#bootstrap"></use>
+    </svg>
+    <span class="fs-4">ADMIN</span>
+  </a>
+  <hr>
+  <ul class="nav nav-pills flex-column mb-auto">
+    <li class="nav-item">
+      <a href="/admin/dashboard" class="nav-link align-middle px-3" style="color: white">
+        <i class="bi bi-bar-chart-fill" style="font-size: 22px;"></i>
+        <span class="ms-1 d-none d-sm-inline">Thống kê</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/admin/category" class="nav-link align-middle px-3" style="color: white">
+        <i class="bi bi-card-list" style="font-size: 22px;"></i>
+        <span class="ms-1 d-none d-sm-inline">Danh mục</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/admin/author" class="nav-link align-middle px-3" style="color: white">
+        <i class="bi bi-file-person-fill" style="font-size: 22px;"></i>
+        <span class="ms-1 d-none d-sm-inline">Tác giả</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/admin/book" class="nav-link align-middle px-3" style="color: white">
+        <i class="bi bi-book" style="font-size: 22px;"></i>
+        <span class="ms-1 d-none d-sm-inline">Sách</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/admin/review" class="nav-link align-middle px-3" style="color: white">
+        <i class="bi bi-star-fill" style="font-size: 22px;"></i>
+        <span class="ms-1 d-none d-sm-inline">Đánh giá</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/admin/promotion" class="nav-link px-3 align-middle" style="color: white">
+        <i class="bi bi-calendar-heart" style="font-size: 22px;"></i>
+        <span class="ms-1 d-none d-sm-inline">Giảm giá</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/admin/user" class="nav-link px-3 align-middle" style="color: white">
+        <i class="fs-4 bi-people"></i>
+        <span class="ms-1 d-none d-sm-inline">Khách hàng</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/admin/order" class="nav-link px-3 align-middle" style="color: white">
+        <i class="bi bi-receipt" style="font-size: 22px;"></i>
+        <span class="ms-1 d-none d-sm-inline">Đơn hàng</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/admin/about" class="nav-link px-3 align-middle" style="color: white">
+        <i class="bi bi-building" style="font-size: 22px;"></i>
+        <span class="ms-1 d-none d-sm-inline">About us</span>
+      </a>
+    </li>
+  </ul>
+  <hr>
+  <div>
+    © Copyright 2024 created by Bin
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const currentPath = window.location.pathname;
+    document.querySelectorAll('.nav-link').forEach(link => {
+      if (link.getAttribute('href') === currentPath) {
+        link.classList.add('active');
+      }
+    });
+  });
+</script>

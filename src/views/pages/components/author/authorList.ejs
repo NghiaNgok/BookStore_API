@@ -1,0 +1,260 @@
+<div class="jumbotron p-3">
+    
+    <div class="card p-3 mb-3">
+      <div class="d-flex bd-highlight">
+        <div class="me-auto p-2 bd-highlight"><h3>QUẢN LÝ TÁC GIẢ</h3></div>
+        <div class="p-2 bd-highlight">
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#createModal"
+          >
+            Thêm mới
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="card p-3 mb-3">
+      <form action="/admin/author" method="get">
+        <div class="d-flex justify-content-around align-items-center">
+          <div class="me-auto p-2" style="width: 80%;">
+            <input
+              id="pName"
+              name="name"
+              type="text"
+              class="form-control"
+              placeholder="Tên Tác giả"
+              value=""
+            />
+          </div>
+  
+          <div class="p-2">
+            <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              onclick="onClickResetAUthor()"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <% if(data.length > 0) { %>
+    <table class="table table-bordered bg-white mt-3">
+      <thead>
+        <tr>
+          <th scope="col">Mã tác giả</th>
+          <th scope="col">Tên tác giả</th>
+          <th scope="col">Trạng thái</th>
+          <th scope="col">Ngày tạo</th>
+          <th scope="col">Ngày cập nhật</th>
+          <th scope="col">Trạng thái</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% data.forEach(function(item, index) { %>
+        <tr>
+          <td scope="row"><%= item.id %></td>
+          <td
+            style="cursor: pointer"
+            class="w-25"
+            data-bs-toggle="tooltip"
+            data-bs-placement="right"
+            title="<%= item.name %>"
+          >
+            <span class="d-inline-block text-truncate" style="max-width: 200px">
+              <%= item.name %>
+            </span>
+          </td>
+
+          <td class="w-2">
+            <% if (item.isActive) { %>
+              <span class="badge bg-success">Đang hoạt động</span>
+            <% } else { %>
+              <span class="badge bg-danger">Đã khóa</span>
+            <% } %>
+          </td>
+          <td class="w-2"><%= item.createdAt %></td>
+          <td class="w-2"><%= item.updatedAt %></td>
+          
+          <td class="w-2">
+            <button
+              data-bs-toggle="modal"
+              data-bs-target="#editModal"
+              type="button"
+              class="btn btn-outline-primary"
+              onclick='editAuthor("<%= item.id %>")'
+            >
+            <i class="bi bi-pencil-square"></i>
+            </button>
+            <button
+              onclick='deleteAuthor("<%= item.id %>")'
+              type="button"
+              class="btn btn-outline-danger"
+            >
+            <i class="bi bi-shield-lock"></i>
+            </button>
+            <button
+              onclick='activeAuthor("<%= item.id %>")'
+              type="button"
+              class="btn btn-outline-success"
+            >
+            <i class="bi bi-check-lg"></i>
+            </button>
+          </td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+    <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        <li class="page-item">
+          <a class="page-link" href="#" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        <% for(var i=1; i <= pages; i++) { %>
+          <% var isActived = ( i === currentPage ) ? "active" : ""; %>
+        <li class="page-item <%= isActived %>">
+          <form action="/admin/author" method="get">
+            <input type="hidden" name="page" value="<%= i %>"/>
+            <input name="name" type="hidden" value="<%= name %>" />
+            <button type="submit" class="btn btn-link page-link"><%= i %></button>
+          </form>
+        </li>
+        <% }; %>
+        <li class="page-item">
+          <a class="page-link" href="#" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <% } else { %>
+      <div class="col-12">
+        <div class="card bg-light p-5">
+          <img
+            style="margin: auto"
+            width="200px"
+            height="200px"
+            src="https://cdn0.fahasa.com/skin//frontend/ma_vanese/fahasa/images/checkout_cart/ico_emptycart.svg"
+          />
+          <div class="fst-italic m-auto">
+            Không tìm thấy Tác giả phù hợp &#128517;
+          </div>
+        </div>
+      </div>
+    <% } %>
+    <div
+      class="modal fade"
+      id="createModal"
+      tabindex="-1"
+      aria-labelledby="createModal"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="createModal">Thêm mới</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form class="row g-3" action="/admin/author/create" method="post">
+              <div class="col-md-12">
+                <label for="name" class="form-label">Tên tác giả</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  name="name"
+                  placeholder="Nhập tên"
+                  required
+                />
+              </div>
+  
+              <div class="col-12">
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Đóng
+                  </button>
+                  <button type="submit" class="btn btn-primary">Thêm</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="modal fade"
+    id="editModal"
+    tabindex="-1"
+    aria-labelledby="editModal"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editModal">Chỉnh sửa</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form class="row g-3" action="/admin/author/edit" method="post">
+            <div class="col-md-12">
+              <label for="name" class="form-label">Tên</label>
+              <input
+                id="nameEdit"
+                type="text"
+                class="form-control"
+                name="name"
+                placeholder="Nhập tên"
+                value=""
+                required
+              />
+              <input
+                id="_idEdit"
+                type="hidden"
+                class="form-control"
+                name="id"
+                placeholder="Nhập tên"
+                value=""
+                required
+              />
+            </div>
+  
+            <div class="col-12">
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Đóng
+                </button>
+                <button type="submit" class="btn btn-primary">Lưu</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  

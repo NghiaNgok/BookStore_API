@@ -1,0 +1,133 @@
+<div class="jumbotron p-3">
+    <div class="card p-3 mb-3">
+      <div class="d-flex bd-highlight">
+        <div class="me-auto p-2 bd-highlight"><h3>QUẢN LÝ ĐÁNH GIÁ </h3></div>
+        <div class="p-2 bd-highlight">
+          
+        </div>
+      </div>
+    </div>
+   
+    <div class="card p-3 mb-3">
+      <form action="/admin/review" method="get">
+        <div class="d-flex justify-content-around align-items-center">
+          <div class="me-auto p-2" style="width: 80%;">
+            <input
+              id="bTitle"
+              name="title"
+              type="text"
+              class="form-control"
+              placeholder="Tên Sách..."
+              value="<%= title %>"
+            />
+          </div>
+  
+          <div class="p-2">
+            <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              onclick="onClickResetReview()"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <% if(data.length > 0) { %>
+    <table class="table table-bordered bg-white mt-3">
+      <thead>
+        <tr>
+          <th scope="col">Sách</th>
+          <th scope="col">Người đánh giá</th>
+          <th scope="col">Nội dung</th>
+          <th scope="col">số sao</th>
+          <th scope="col">Ngày tạo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% data.forEach(function(item, index) { %>
+        <tr>
+          <td class="w-10">
+            <div class="d-flex">
+              <img src="<%= item.book.imageUrl %>" height="60px" width="60px" />
+              <div data-bs-toggle="tooltip" data-bs-placement="right" title="<%= item.book.title %>" class="d-block"
+                style="margin-left: 10px;">
+                <span class="d-inline-block text-truncate" style="max-width: 200px">
+                  <%= item.book.title %>
+                </span>
+                <div class="fw-bold">$ <%= item.book.price %>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="w-2"><%= item.user.username %></td>
+          <td
+            style="cursor: pointer"
+            class="w-25"
+            data-bs-toggle="tooltip"
+            data-bs-placement="right"
+            title="<%= item.content %>"
+          >
+            <span class="d-inline-block text-truncate" style="max-width: 200px">
+              <%= item.content %>
+            </span>
+          </td>
+          <td class="w-2">
+            <% for (var j = 0; j < 5; j++){ %> 
+              <% if (j < item.rate){ %>
+                <i class="bi bi-star-fill" style="color: gold;"></i>
+              <% } else { %>
+                <span class="fa fa-star"></span>
+              <% } %> 
+            <% } %>
+          </td>
+          <td class="w-2"><%= item.createdAt %></td>       
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+    <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        <li class="page-item">
+          <a class="page-link" href="#" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        <% for(var i=1; i <= pages; i++) { %>
+          <% var isActived = ( i === currentPage ) ? "active" : ""; %>
+        <li class="page-item <%= isActived %>">
+          <form action="/admin/review" method="get">
+            <input type="hidden" name="page" value="<%= i %>"/>
+            <input name="title" type="hidden" value="<%= title %>" />
+            <button type="submit" class="btn btn-link page-link"><%= i %></button>
+          </form>
+        </li>
+        <% }; %>
+        <li class="page-item">
+          <a class="page-link" href="#" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <% } else { %>
+      <div class="col-12">
+        <div class="card bg-light p-5">
+          <img
+            style="margin: auto"
+            width="200px"
+            height="200px"
+            src="https://cdn0.fahasa.com/skin//frontend/ma_vanese/fahasa/images/checkout_cart/ico_emptycart.svg"
+          />
+          <div class="fst-italic m-auto">
+            Không tìm thấy Danh mục phù hợp &#128517;
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+ 
+  </div>
+  

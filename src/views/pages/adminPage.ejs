@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin</title>
+ 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+    <script src="https://cdn.tiny.cloud/1/5lb0hivzgp9sacindhviczgv78k7e8na96hfvsb730fdpafh/tinymce/7/tinymce.min.js"
+    referrerpolicy="origin"></script>
+    <style>
+      .nav-item {
+        margin-bottom: 10px;
+        transition: background-color 0.3s, color 0.3s;
+      }
+  
+      .nav-item:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+      }
+  
+      .nav-item.active {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include('../partials/adminNavbar.ejs') %>
+    <div class="container-fluid">
+      <div class="row flex-nowrap">
+        <%- include('../partials/adminSidebar.ejs') %>
+        <div class="col bg-light">
+          <!-- Content -->
+          <% if(module==='author') { %>
+            <%- include('./components/author/authorList.ejs') %>
+          <% } %>
+          <% if(module==='category') { %>
+            <%- include('./components/category/category.ejs') %>
+          <% } %>
+          <% if(module==='book') { %>
+            <%- include('./components/product/productList.ejs') %>
+          <% } %>
+          <% if(module==='user') { %>
+            <%- include('./components/user/userList.ejs') %>
+          <% } %>
+          <% if(module==='order') { %>
+            <%- include('./components/order/orderList.ejs') %>
+          <% } %>
+          <% if(module==='orderDetail') { %>
+            <%- include('./components/order/orderDetail.ejs') %>
+          <% } %>
+          <% if(module==='promotion') { %>
+            <%- include('./components/promotion/promotionList.ejs') %>
+          <% } %>
+          <% if(module==='addPromotionPage') { %>
+            <%- include('./components/promotion/addPromotionPage.ejs') %>
+          <% } %>
+          <% if(module==='detailPromotion') { %>
+            <%- include('./components/promotion/detailPromotion.ejs') %>
+          <% } %>
+          <% if(module==='dashboard') { %>
+            <%- include('./components/dashboard/dashboard.ejs') %>
+          <% } %>
+          <% if(module==='about') { %>
+            <%- include('./components/about/about.ejs') %>
+          <% } %>
+          <% if(module==='review') { %>
+            <%- include('./components/review/reviewList.ejs') %>
+          <% } %>
+        </div>
+      </div>
+    </div>
+    <script>
+         tinymce.init({
+            selector: '#aboutUs_content',
+            plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage advtemplate ai mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss markdown',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+            tinycomments_mode: 'embedded',
+            tinycomments_author: 'Author name',
+            mergetags_list: [
+              { value: 'First.Name', title: 'First Name' },
+              { value: 'Email', title: 'Email' },
+            ],
+            ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
+          });
+      function cancelOrder(oid) {
+        $.ajax({
+          type: "POST",
+          data: {
+            orderId: oid,
+          },
+          url: `/admin/order/cancel`,
+          success: function (rs) {
+            alert("Hủy đơn hàng thành công");
+            window.location.reload();
+          },
+        });
+      }
+      function onClickResetReview() {
+        document.getElementById("bTitle").value = "";
+      }
+      function onClickResetAUthor(){
+        document.getElementById("name").value = "";
+      }
+      function onClickResetPromotion(){
+        document.getElementById("pTitle").value = "";
+      }
+      function onClickReset() {
+        document.getElementById("idSearch").value = "";
+        document.getElementById("status").value = "";
+        document.getElementById("paid").value = "";
+      }
+      function onClickResetProduct() {
+        document.getElementById("title").value = "";
+        document.getElementById("category").value = "";
+        document.getElementById("rate").value = "";
+        document.getElementById("author").value = "";
+      }
+      function onClickResetUser() {
+        document.getElementById("username").value = "";
+        document.getElementById("isActive").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("fullName").value = "";
+      }
+      function blockUser(id) {
+        $.ajax({
+          type: "POST",
+          url: `/admin/user/disable/${id}`,
+          success: function (rs) {
+            alert("disable success");
+            window.location.reload();
+          },
+        });
+      }
+      function activeUser(id) {
+        $.ajax({
+          type: "POST",
+          url: `/admin/user/active/${id}`,
+          success: function (rs) {
+            alert("active success");
+            window.location.reload();
+          },
+        });
+      }
+      function editProduct(id) {
+        $.ajax({
+          type: "GET",
+          url: `/admin/book/${id}`,
+          success: function (rs) {
+            if (rs.s === 200) {
+              let data = rs.data;
+              // set data vừa get đc lên <input>
+              document.getElementById("_idEdit").value = data.id;
+              document.getElementById("nameEdit").value = data.title;
+              document.getElementById("priceEdit").value = data.price;
+              document.getElementById("categoriEdit").value = data.categoryId;
+              document.getElementById("descriptionEdit").value =
+                data.description;
+              document.getElementById("imageUrlEdit").value = data.imageUrl;
+              document.getElementById("imageUploadEdit").src = data.imageUrl;
+              document.getElementById("authorEdit").value = data.authorId;
+              document.getElementById("limitDiscountEdit").value = data.limitDiscount;
+            }
+          },
+        });
+      }
+      function editPromotion(id) {
+        $.ajax({
+          type: "GET",
+          url: `/admin/promotion/detail/${id}`,
+          success: function (rs) {
+            if (rs.s === 200) {
+              let data = rs.data;
+              // set data vừa get đc lên <input>
+              document.getElementById("_idEdit").value = data._id;
+              document.getElementById("codeEdit").value = data.code;
+              document.getElementById("nameEdit").value = data.name;
+              document.getElementById("GiamGiaEdit").value = data.GiamGia;
+              document.getElementById("startDateEdit").value = data.startDate;
+              document.getElementById("endDateEdit").value = data.endDate;
+              document.getElementById("descEdit").value = data.desc;
+            }
+          },
+        });
+      }
+      function editcategory(id) {
+        $.ajax({
+          type: "GET",
+          url: `/admin/category/detail/${id}`,
+          success: function (rs) {
+            if (rs.s === 200) {
+              let data = rs.data;
+              // set data vừa get đc lên <input>
+              document.getElementById("nameEdit").value = data?.name;
+              document.getElementById("descriptionEdit").value = data?.description;
+              document.getElementById("_idEdit").value = data?.id;
+            }
+          },
+        });
+      }
+      function editAuthor(id) {
+        $.ajax({
+          type: "GET",
+          url: `/admin/author/detail/${id}`,
+          success: function (rs) {
+            if (rs.s === 200) {
+              let data = rs.data;
+              // set data vừa get đc lên <input>
+              document.getElementById("nameEdit").value = data?.name;
+              
+              document.getElementById("_idEdit").value = data?.id;
+            }
+          },
+        });
+      }
+      function deleteBook(id) {
+        $.ajax({
+          type: "POST",
+          url: `/admin/book/disable/${id}`,
+          success: function (rs) {
+            alert("disable success");
+            window.location.reload();
+          },
+        });
+      }
+      function deletecategory(id) {
+        $.ajax({
+          type: "POST",
+          url: `/admin/category/disable/${id}`,
+          success: function (rs) {
+            alert("disable success");
+            window.location.reload();
+          },
+        });
+      }
+      function deleteAuthor(id) {
+        $.ajax({
+          type: "POST",
+          url: `/admin/author/disable/${id}`,
+          success: function (rs) {
+            alert("disable success");
+            window.location.reload();
+          },
+        });
+      }
+      function deletePromotion(id) {
+        $.ajax({
+          type: "POST",
+          url: `/admin/promotion/disable/${id}`,
+          success: function (rs) {
+            alert("díable success");
+            window.location.reload();
+          },
+        });
+      }
+      function activePromotion(id) {
+        $.ajax({
+          type: "POST",
+          url: `/admin/promotion/active/${id}`,
+          success: function (rs) {
+            alert("active success");
+            window.location.reload();
+          },
+        });
+      }
+      function activeCategory(id) {
+        $.ajax({
+          type: "POST",
+          url: `/admin/category/active/${id}`,
+          success: function (rs) {
+            alert("active success");
+            window.location.reload();
+          },
+        });
+      }
+      function activeAuthor(id) {
+        $.ajax({
+          type: "POST",
+          url: `/admin/author/active/${id}`,
+          success: function (rs) {
+            alert("active success");
+            window.location.reload();
+          },
+        });
+      }
+      function activeBook(id) {
+        $.ajax({
+          type: "POST",
+          url: `/admin/book/active/${id}`,
+          success: function (rs) {
+            alert("active success");
+            window.location.reload();
+          },
+        });
+      }
+      function uploadImage() {
+        var fileInput = document.getElementById("image_file");
+        var file = fileInput.files[0];
+        if (!file) {
+          return alert("Vui lòng chọn ảnh");
+        }
+        var formData = new FormData();
+        formData.append("file", file);
+
+        $.ajax({
+          url: "/admin/book/image",
+          type: "POST",
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function (response) {
+            document.getElementById("imageUpload").src = response.secure_url;
+            document.getElementById("imageUrl").value = response.secure_url;
+          },
+          error: function (xhr, status, error) {
+            // Xử lý lỗi
+          },
+        });
+      }
+      function uploadImageForEdit() {
+        var fileInput = document.getElementById("image_file_edit");
+        var file = fileInput.files[0];
+        if (!file) {
+          return alert("Vui lòng chọn ảnh");
+        }
+        var formData = new FormData();
+        formData.append("file", file);
+
+        $.ajax({
+          url: "/admin/book/image",
+          type: "POST",
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function (response) {
+            document.getElementById("imageUploadEdit").src =
+              response.secure_url;
+            document.getElementById("imageUrlEdit").value =
+              response.secure_url;
+          },
+          error: function (xhr, status, error) {
+            // Xử lý lỗi
+          },
+        });
+      }
+    </script>
+  </body>
+</html>

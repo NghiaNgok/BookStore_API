@@ -1,0 +1,220 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AboutEntity {
+  content: String!
+  id: String!
+}
+
+type AuthorEntity {
+  createdAt: String!
+  id: String!
+  isActive: Boolean!
+  name: String!
+  updatedAt: String!
+}
+
+type BookEntity {
+  authorId: String!
+  bookPromotion: [BookPromotionEntity!]
+  categoryId: String!
+  createdAt: DateTime!
+  description: String!
+  id: String!
+  imageUrl: String!
+  isActive: Boolean!
+  isOutofStock: Boolean!
+  limitDiscount: Int!
+  price: Float!
+  rate: Float!
+  title: String!
+  updatedAt: DateTime!
+}
+
+type BookPromotionEntity {
+  book: BookEntity!
+  bookId: String!
+  id: String!
+  promotion: PromotionEntity!
+  promotionId: String!
+}
+
+type CartItemEntity {
+  book: BookEntity
+  bookId: String!
+  createdAt: DateTime!
+  id: String!
+  price: Float!
+  quantity: Float!
+  updatedAt: DateTime!
+  userId: String!
+}
+
+type Category {
+  createdAt: String!
+  description: String!
+  id: String!
+  isActive: Boolean!
+  name: String!
+  updatedAt: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type DetailBookDto {
+  author: AuthorEntity!
+  authorId: String!
+  bookPromotion: [BookPromotionEntity!]
+  category: Category!
+  categoryId: String!
+  createdAt: DateTime!
+  description: String!
+  id: String!
+  imageUrl: String!
+  isActive: Boolean!
+  isOutofStock: Boolean!
+  limitDiscount: Int!
+  price: Float!
+  rate: Float!
+  title: String!
+  updatedAt: DateTime!
+}
+
+type Mutation {
+  addToCart(bookId: String!, price: Float!, quantity: Int!, userId: String!): CartItemEntity!
+  createOrder(address: String!, customerName: String!, orderItem: [OrderItemInput!]!, paidAt: DateTime, paymentMethod: PaymentMethod!, phoneNumber: String!, status: OrderStatus!, totalPrice: Float!, userId: String!): OrderEntity!
+  createReview(bookId: String!, content: String!, rate: Int!, userId: String!): ReviewEntity!
+  deleteAllCart(uid: String!): Float!
+  logout(uid: String!): UserEntity!
+  refresh(refresh_token: String!): SignInResponseDto!
+  removeCart(id: String!): CartItemEntity!
+  signin(password: String!, username: String!): SignInResponseDto!
+  signup(address: String!, avatar: String!, email: String!, fullName: String!, password: String!, phoneNumber: String!, username: String!): UserEntity!
+  updateBookRating(id: String!): BookEntity!
+  updateCart(id: String!, quantity: Int!): CartItemEntity!
+  updateInfo(address: String!, avatar: String!, email: String!, fullName: String!, id: String!, phoneNumber: String!): UserEntity!
+  updatePassword(currentPassword: String!, id: String!, newPassword: String!): UserEntity!
+}
+
+type OrderEntity {
+  OrderDetail: [OrderItemEntity!]!
+  address: String!
+  createdAt: String!
+  customerName: String!
+  id: String!
+  paidAt: String
+  paymentMethod: PaymentMethod!
+  phoneNumber: String!
+  status: OrderStatus!
+  totalPrice: Float!
+  updatedAt: String!
+  userId: String!
+}
+
+type OrderItemEntity {
+  book: BookEntity!
+  bookId: String!
+  id: String!
+  orderId: String!
+  price: Float!
+  quantity: Int!
+}
+
+input OrderItemInput {
+  bookId: String!
+  price: Float!
+  quantity: Int!
+}
+
+enum OrderStatus {
+  APPROVED
+  DONE
+  INIT
+  INPROGRESS
+  REJECTED
+  SHIPING
+}
+
+enum PaymentMethod {
+  COD
+  ONLINE_BANKING
+}
+
+type PromotionEntity {
+  book: [BookEntity!]!
+  bookPromotion: [BookPromotionEntity!]!
+  createdAt: String!
+  description: String!
+  discountPercents: Int
+  expriedDate: String!
+  id: String!
+  isActive: Boolean!
+  startDate: String!
+  updatedAt: String!
+}
+
+type Query {
+  findAllAuthors: [AuthorEntity!]!
+  findAllBooks(author: [String!], category: [String!], isActive: Boolean = true, limit: Int, page: Int, rate: [Int!], sortByEnum: String, title: String): ResponseBookDto!
+  findAllCategories: [Category!]!
+  findOneAbout: AboutEntity!
+  getAllReview(bookId: String, bookTitle: String, limit: Int, page: Int, rate: [Int!]): ResponseReviewDto!
+  getCart(uid: String!): [CartItemEntity!]!
+  getDetailBook(id: String!): DetailBookDto!
+  getOrder(limit: Int, page: Int, userId: String): [OrderEntity!]!
+  getOrderDetail(oid: String!): OrderEntity!
+  getUser(id: String!): UserEntity!
+}
+
+type ResponseBookDto {
+  currentPage: Int!
+  limit: Int!
+  list: [BookEntity!]!
+  totalPages: Int!
+  totalProducts: Int!
+}
+
+type ResponseReviewDto {
+  currentPage: Int!
+  limit: Int!
+  list: [ReviewEntity!]!
+  totalPages: Int!
+  totalProducts: Int!
+}
+
+type ReviewEntity {
+  book: BookEntity!
+  bookId: String!
+  content: String!
+  createdAt: String!
+  id: String!
+  rate: Int!
+  updatedAt: String!
+  user: UserEntity!
+  userId: String!
+}
+
+type SignInResponseDto {
+  accessToken: String!
+  refreshToken: String!
+  userInfo: UserEntity!
+}
+
+type UserEntity {
+  address: String
+  avatar: String
+  createdAt: DateTime!
+  email: String!
+  fullName: String!
+  id: String!
+  isActive: Boolean!
+  password: String!
+  phoneNumber: String!
+  refreshToken: String
+  updatedAt: DateTime!
+  username: String!
+}

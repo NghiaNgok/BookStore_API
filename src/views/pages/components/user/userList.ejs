@@ -1,0 +1,118 @@
+<div class="jumbotron p-3">
+
+  <div class="card p-3 mb-3">
+    <div class="d-flex bd-highlight">
+      <div class="me-auto p-2 bd-highlight"><h3>QUẢN LÝ NGƯỜI DÙNG</h3></div>
+      <div class="p-2 bd-highlight">
+
+      </div>
+    </div>
+  </div>
+  <div class="card p-3 mb-3">
+    <form action="/admin/user" method="get">
+      <div class="d-flex justify-content-around align-items-center">
+        <div class="p-2">
+          <input id="username" name="username" type="text" class="form-control" placeholder="Tên tài khoản"
+            value="<%= filters.username %>" />
+        </div>
+        <div class="p-2">
+          <input id="email" name="email" type="text" class="form-control" placeholder="Email"
+            value="<%= filters.email %>" />
+        </div>
+        <div class="p-2">
+          <input id="fullName" name="fullName" type="text" class="form-control" placeholder="Full Name"
+            value="<%= filters.fullName %>" />
+        </div>
+        <div class="p-2">
+          <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+          <button type="button" class="btn btn-outline-secondary" onclick="onClickResetUser()">Reset</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <% if(data.length> 0) { %>
+    <table class="table table-bordered bg-white mt-3">
+      <thead>
+        <tr>
+          <th scope="col">Mã khách hàng</th>
+          <th scope="col">Họ tên</th>
+          <th scope="col">Email</th>
+          <th scope="col">Tên tài khoản</th>
+          <th scope="col">Trạng thái</th>
+          <th scope="col">Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% data.forEach(function(item, index) { %>
+          <tr>
+            <th scope="row">
+              <%= item.id %>
+            </th>
+            <td>
+              <%= item.fullName %>
+            </td>
+            <td>
+              <%= item.email %>
+            </td>
+            <td>
+              <%= item.username %>
+            </td>
+            <td>
+              <% if(item.isActive===false) { %>
+                <span class="badge rounded-pill bg-danger">Đã khóa</span>
+                <% } %>
+                  <% if(item.isActive===true) { %>
+                    <span class="badge rounded-pill bg-success">Đã kích hoạt</span>
+                    <% } %>
+            </td>
+            <td>
+              <button onclick='blockUser("<%= item.id %>")' type="button" class="btn btn-outline-danger">
+                <i class="bi bi-shield-lock"></i>
+              </button>
+              <button onclick='activeUser("<%= item.id %>")' type="button" class="btn btn-outline-success">
+                <i class="bi bi-check-lg"></i>
+              </button>
+            </td>
+          </tr>
+          <%});%>
+      </tbody>
+    </table>
+    <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        <li class="page-item">
+          <a class="page-link" href="#" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        <% for(var i=1; i <= pages; i++) { %>
+          <% var isActived = ( i === currentPage ) ? "active" : ""; %>
+        <li class="page-item <%= isActived %>">
+          <form action="/admin/user" method="get">
+            <input type="hidden" name="page" value="<%= i %>"/>
+            <input name="fullName" type="hidden" value="<%= filters.fullName %>" />
+            <input name="email" type="hidden" value="<%= filters.email %>" />
+            <input name="username" type="hidden" value="<%= filters.username %>" />
+           
+            <button type="submit" class="btn btn-link page-link"><%= i %></button>
+          </form>
+        </li>
+        <% }; %>
+        <li class="page-item">
+          <a class="page-link" href="#" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <% } else { %>
+      <div class="col-12">
+        <div class="card bg-light p-5">
+          <img style="margin: auto" width="200px" height="200px"
+            src="https://cdn0.fahasa.com/skin//frontend/ma_vanese/fahasa/images/checkout_cart/ico_emptycart.svg" />
+          <div class="fst-italic m-auto">
+            Không tìm thấy Khách hàng phù hợp &#128517;
+          </div>
+        </div>
+      </div>
+      <% } %>
+</div>
