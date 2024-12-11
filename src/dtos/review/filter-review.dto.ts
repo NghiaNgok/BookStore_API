@@ -13,6 +13,7 @@ export class FilterReviewDto {
   @IsOptional()
   bookTitle?: string;
 
+
   @Field(() => [Int], { nullable: true })
   @IsArray()
   @IsOptional()
@@ -27,4 +28,9 @@ export class FilterReviewDto {
   @IsNumber()
   @IsOptional()
   limit?: number;
+
+  @Field(() => String, { nullable: true })
+  @IsString()
+  @IsOptional()
+  category?: string;
 }

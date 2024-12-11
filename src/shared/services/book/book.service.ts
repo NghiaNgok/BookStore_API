@@ -18,6 +18,7 @@ export class BookService {
   ) {}
 
   async create(createBookDto: CreateBookDto) {
+    console.log('CreateBookDto in service:', createBookDto); // Log DTO received
     const result = await this.bookRepository.create({
       data: {
         title: createBookDto.title,
@@ -38,6 +39,7 @@ export class BookService {
         },
       },
     });
+    console.log('Database save result:', result);
     return plainToInstance(BookEntity, result);
   }
 
@@ -51,12 +53,28 @@ export class BookService {
     let itemPerPage: number = filter.limit ? filter.limit : 5;
     let offset: number = filter.page > 0 ? (filter.page - 1) * filter.limit : 0;
     let currentPage: number = filter.page ? filter.page : 1;
-
+  
     const whereCondition: any = {
       AND: [],
     };
     let sortCondition: any = {};
-
+  
+    // Check for rating filter and calculate range for each value
+    if (filter.rate && filter.rate.length > 0) {
+      filter.rate.forEach((rate) => {
+        const lowerBound = Math.floor(rate) - 0.5; // Giá trị nhỏ hơn hoặc bằng rate
+        const upperBound = Math.floor(rate) + 0.4; // Giá trị lớn hơn hoặc bằng rate
+  
+        whereCondition.AND.push({
+          rate: {
+            gte: lowerBound,
+            lte: upperBound,
+          },
+        });
+      });
+    }
+  
+    // Sorting conditions
     if (filter.sortByEnum) {
       const currentDate = new Date();
       switch (filter.sortByEnum) {
@@ -70,8 +88,7 @@ export class BookService {
                   expriedDate: { gte: currentDate },
                 },
               },
-            },
-          });
+            }});
           break;
         case SortBookByEnum.POPULAR:
           whereCondition.AND.push({
@@ -81,8 +98,8 @@ export class BookService {
                   status: OrderStatus.DONE,
                 },
               },
-            },
-          });
+            }});
+            
           sortCondition = {
             orderDetail: {
               _count: 'desc',
@@ -96,27 +113,25 @@ export class BookService {
           break;
       }
     }
-
+  
+    // Apply other filters
     if (filter.title) {
       whereCondition.AND.push({ title: { contains: filter.title } });
     }
-
-    if (filter.rate && filter.rate.length > 0) {
-      whereCondition.AND.push({ rate: { in: filter.rate } });
-    }
-
+  
     if (filter.category && filter.category.length > 0) {
       whereCondition.AND.push({ categoryId: { in: filter.category } });
     }
-
+  
     if (filter.author && filter.author.length > 0) {
       whereCondition.AND.push({ authorId: { in: filter.author } });
     }
-
+  
     if (filter.isActive) {
       whereCondition.AND.push({ isActive: { equals: filter.isActive } });
     }
-
+  
+    // Fetch data and count
     const [list, total] = await Promise.all([
       this.bookRepository.findMany({
         skip: offset,
@@ -128,8 +143,9 @@ export class BookService {
         where: whereCondition,
       }),
     ]);
-
+  
     const result = plainToInstance(BookEntity, list);
+  
     return {
       list: result,
       totalProducts: total,
@@ -138,6 +154,7 @@ export class BookService {
       limit: itemPerPage,
     };
   }
+  
   async findOne(id: string): Promise<BookEntity> {
     const result = await this.bookRepository.findOne({ id });
     return plainToInstance(BookEntity, result);

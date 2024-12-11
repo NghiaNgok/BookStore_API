@@ -1,0 +1,456 @@
+<div style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 20px; padding: 20px; height: 100vh;">
+  <!-- Product Table (Top-left) -->
+  <div style="padding: 20px; margin: 10px; border-radius: 10px; background-color: #f8f9fa; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); height: 400px; overflow-y: auto;">
+    <h3>QUẢN LÝ SẢN PHẨM</h3>
+    <!-- Search Filters Form -->
+    <form action="/admin/aspect" method="get">
+      <div class="d-flex justify-content-around align-items-center">
+        <div class="p-2">
+          <input id="title" name="title" type="text" class="form-control" placeholder="Tên sản phẩm" />
+        </div>
+        <div style="width: 250px;" class="p-2">
+          <select id="category" name="category" class="form-select">
+            <option hidden value="">-Danh mục-</option>
+            <% for (var i = 0; i < listCategories.length; i++) { 
+              var selected = listCategories[i].id === filters.category[0] ? "selected" : ""; %>
+            <option value="<%= listCategories[i].id %>" <%= selected %>>
+              <%= listCategories[i].name %>
+            </option>
+            <% } %>
+          </select>
+        </div>
+        <div style="width: 250px;" class="p-2">
+          <select
+            name="rate"
+            id="rate"
+            class="form-select"
+            aria-label="Select rate"
+          >
+            <option hidden value="">-Đánh giá-</option>
+            <option value="0" <%= filters.rate[0] === 0 ? "selected" : "" %>>0 sao</option>
+            <option value="1" <%= filters.rate[0] === 1 ? "selected" : "" %>>1 sao</option>
+            <option value="2" <%= filters.rate[0] === 2 ? "selected" : "" %>>2 sao</option>
+            <option value="3" <%= filters.rate[0] === 3 ? "selected" : "" %>>3 sao</option>
+            <option value="4" <%= filters.rate[0] === 4 ? "selected" : "" %>>4 sao</option>
+            <option value="5" <%= filters.rate[0] === 5 ? "selected" : "" %>>5 sao</option>
+          </select>
+        </div>
+        <div class="p-2">
+          <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+          <button type="button" class="btn btn-outline-secondary" onclick="onClickResetProduct()">Reset</button>
+        </div>
+      </div>
+    </form>
+    
+
+    <!-- Product Table -->
+    <% if(data.length > 0) { %>
+    <table class="table table-bordered bg-white mt-3">
+      <thead>
+        <tr>
+          <th scope="col">Hình ảnh</th>
+          <th scope="col">Tên sản phẩm</th>
+          <th scope="col">Danh mục</th>
+          <th scope="col">Đánh giá</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% data.forEach(function (item, index) { %>
+        <tr class="clickable-row" data-id="<%= item.id %>">
+          <td class="w-2">
+            <div class="text-center">
+              <img src="<%= item.imageUrl %>" height="50px" width="50px" />
+            </div>
+          </td>
+          <td style="cursor: pointer" class="w-10" data-bs-toggle="tooltip" data-bs-placement="right" title="<%= item.title %>">
+            <span class="d-inline-block text-truncate" style="max-width: 200px">
+              <%= item.title %>
+            </span>
+          </td>
+          <td class="w-2"><%= item.category.name %></td>
+          <td class="w-2">
+            <% for (var j = 0; j < 5; j++) { %> 
+              <% if (j < Math.floor(item.rate)) { %> 
+                <i class="bi bi-star-fill" style="color: gold;"></i>  <!-- Sao đầy đủ -->
+              <% } else if (j < item.rate) { %> 
+                <i class="bi bi-star-half" style="color: gold;"></i> <!-- Sao một nửa -->
+              <% } else { %> 
+                <span class="fa fa-star"></span>  <!-- Sao rỗng -->
+              <% } %> 
+            <% } %>
+          </td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+     <!-- Pagination Controls -->
+     <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        <li class="page-item">
+          <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        <% for (var i = 1; i <= pages; i++) { %>
+          <% var isActived = i === currentPage ? "active" : ""; %>
+          <li class="page-item <%= isActived %>">
+            <form action="/admin/aspect" method="get">
+              <input type="hidden" name="page" value="<%= i %>" />
+              <input name="title" type="hidden" value="<%= filters.title %>" />
+              <input name="category" type="hidden" value="<%= filters.category %>" />
+              <input name="rate" type="hidden" value="<%= filters.rate %>" />
+              <button type="submit" class="btn btn-link page-link">
+                <%= i %>
+              </button>
+            </form>
+          </li>
+        <% } %>
+        <li class="page-item">
+          <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  <% } else { %>
+    <div class="col-12">
+      <div class="card bg-light p-5">
+        <img
+          style="margin: auto"
+          width="200px"
+          height="200px"
+          src="https://www.foxrentacar.com/media/1261/no-record-found.png"
+          alt="Not Found"
+        />
+        <h4 class="text-center">Không tìm thấy sản phẩm nào</h4>
+      </div>
+    </div>
+  <% } %>
+  </div>
+
+  <!-- Bar Chart (Top-right) -->
+  <div style="padding: 20px; margin: 10px; border-radius: 10px; background-color: #f8f9fa; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); height: 400px; display: flex; justify-content: center; align-items: center; width: 100%;">
+    <canvas id="myChart1" style="max-width: 100%; height: 100%;"></canvas>
+  </div>
+
+  <!-- Pie Chart (Bottom-left) -->
+  <div style="padding: 20px; margin: 10px; border-radius: 10px; background-color: #f8f9fa; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); height: 400px; display: flex; justify-content: center; align-items: center; width: 100%;">
+    <canvas id="myChart2" style="max-width: 100%; height: 100%;"></canvas>
+  </div>
+
+  <!-- Radar Chart (Bottom-right) -->
+  <div style="padding: 20px; margin: 10px; border-radius: 10px; background-color: #f8f9fa; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); height: 400px; display: flex; justify-content: center; align-items: center; width: 100%;">
+    <canvas id="myChart3" style="max-width: 100%; height: 100%;"></canvas>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+  let myChart1; // Declare the chart instance globally
+  let myChart2; // Pie chart instance for category data
+  let myChart3; // Radar chart instance for category sentiment analysis
+  let selectedProductId = null; // To store the selected product ID
+
+  // Data for Bar Chart (Sentiment Analysis)
+  const barData = {
+    labels: ['Positive', 'Negative', 'Neutral'],
+    datasets: [{
+      label: 'Number of Comments',
+      data: [0, 0, 0],  // Initial values; will be updated after API response
+      backgroundColor: [
+        'rgba(75, 192, 192, 0.2)', // Positive
+        'rgba(255, 99, 132, 0.2)', // Negative
+        'rgba(255, 159, 64, 0.2)', // Neutral
+      ],
+      borderColor: [
+        'rgb(75, 192, 192)',
+        'rgb(255, 99, 132)',
+        'rgb(255, 159, 64)',
+      ],
+      borderWidth: 5
+    }]
+  };
+
+  // Data for Pie Chart (Categories)
+  const pieData = {
+    labels: [], // Dynamic labels from API
+    datasets: [{
+      label: 'Review Categories',
+      data: [], // Dynamic data from API
+      backgroundColor: [
+        'rgb(255, 99, 132)', // Chất lượng sản phẩm
+        'rgb(54, 162, 235)', // Dịch vụ và hỗ trợ khách hàng
+        'rgb(255, 205, 86)', // Giá cả và chi phí
+        'rgb(75, 192, 192)', // Vận chuyển và đóng gói
+        'rgb(153, 102, 255)' // Khác
+      ],
+      hoverOffset: 4
+    }]
+  };
+
+  const radarData = {
+    labels: ['Positive', 'Negative', 'Neutral'], // Sentiment categories
+    datasets: [{
+      label: 'Sentiment Category Analysis',
+      data: [30, 20, 50], // Example sentiment values, replace with actual data
+      fill: true,
+      backgroundColor: 'rgba(255, 99, 132, 0.2)', // Fill color
+      borderColor: 'rgb(255, 99, 132)',          // Border color
+      pointBackgroundColor: 'rgb(255, 99, 132)', // Point color
+      pointBorderColor: '#fff',                  // Point border color
+      pointHoverBackgroundColor: '#fff',         // Point hover color
+      pointHoverBorderColor: '#fff',             // Point hover border color
+    }]
+  };
+
+  // Ensure to define chart configurations and create charts after defining data
+  const barConfig = {
+    type: 'bar',
+    data: barData,
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  };
+
+  const pieConfig = {
+    type: 'pie',
+    data: pieData,
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      onClick: (event, chartElement) => {
+        // Ensure that there is a valid click on a slice
+        if (chartElement.length > 0) {
+          const index = chartElement[0].index;
+          const selectedCategory = pieData.labels[index];
+          console.log('Selected Category:', selectedCategory);  // Log the selected category
+
+          // Fetch sentiment data for the selected category and update the radar chart
+          updateRadarChartData(selectedCategory);
+        }
+      },
+      plugins: {
+        tooltip: {
+          enabled: true, // Enable tooltips on hover
+        }
+      },
+      interaction: {
+        mode: 'nearest', // The interaction mode (use 'nearest' for nearest element or 'index' for all at the same index)
+        intersect: true, // Ensures the click or hover event triggers only when the cursor intersects an element
+        axis: 'xy', // The axis on which to trigger the interaction (x and y axes)
+      }
+    }
+  };
+
+  
+  const radarConfig = {
+    type: 'radar',
+    data: radarData,
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      scales: {
+        r: {
+          min: 0, 
+          max: 100,  // Set max value for the radar chart
+          ticks: {
+            stepSize: 20,  // Step size between ticks
+            display: false // Hide tick marks, we will use the labels
+          }
+        }
+      },
+      plugins: {
+        tooltip: {
+          enabled: true,
+          callbacks: {
+            label: function(tooltipItem) {
+              const sentimentCategory = radarData.labels[tooltipItem.dataIndex];
+              const sentimentValue = tooltipItem.raw;
+              return `${sentimentCategory}: ${sentimentValue}`; // Display category and value
+            }
+          }
+        },
+        datalabels: {
+          display: true,  // Enable data labels
+          color: '#fff',  // White color for labels
+          font: {
+            size: 14,     // Font size for the data labels
+            weight: 'bold' // Font weight for the labels
+          },
+          formatter: function(value, context) {
+            // Display the sentiment value below the category
+            return value; // The sentiment value will be displayed below each label
+          },
+          anchor: 'start', // Position the labels below the vertices
+          align: 'start',  // Align the labels to start, which positions them below
+          offset: 15,      // Add space between the label and the point (adjust as needed)
+        }
+      },
+      interaction: {
+        mode: 'nearest',
+        intersect: true
+      }
+    }
+  };
+
+  // Function to create a chart and return the chart instance
+  const createChart = (chartId, config) => {
+    const ctx = document.getElementById(chartId).getContext('2d');
+    return new Chart(ctx, config); // Return the chart instance
+  };
+
+  // Create the charts and store the chart instances globally
+  myChart1 = createChart('myChart1', barConfig);
+  myChart2 = createChart('myChart2', pieConfig);
+  myChart3 = createChart('myChart3', radarConfig);
+  // Create the radar chart using the config and data
+
+  // Function to fetch product data and populate the table
+  const fetchProductData = async () => {
+    try {
+      const response = await fetch('/api/products'); // Replace with your actual API endpoint
+      const products = await response.json();
+
+      const tableBody = document.getElementById('productTableBody');
+      tableBody.innerHTML = ''; // Clear existing rows
+
+      products.forEach(product => {
+        const row = document.createElement('tr');
+        row.setAttribute('data-id', product.id);  // Ensure each row has the correct productId
+        row.classList.add('clickable-row');
+        row.innerHTML = `
+          <td class="w-2">
+            <div class="text-center">
+              <img src="${product.imageUrl}" height="50px" width="50px" />
+            </div>
+          </td>
+          <td class="w-10">${product.name}</td>
+          <td class="w-2">${product.category}</td>
+          <td class="w-2">
+            ${'★'.repeat(product.rating)}${'☆'.repeat(5 - product.rating)}
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    } catch (error) {
+      console.error('Error fetching product data:', error);
+    }
+  };
+
+  // Call the function to populate the product table on page load
+  document.addEventListener('DOMContentLoaded', fetchProductData);
+
+  // Handle row click event to fetch data and update charts
+  document.addEventListener('DOMContentLoaded', function () {
+    const rows = document.querySelectorAll('.clickable-row');
+
+    rows.forEach(row => {
+      row.addEventListener('click', async function () {
+        const productId = row.getAttribute('data-id');
+        
+        try {
+          // Fetch data for the specific product using its ID
+          const response = await fetch(`/admin/aspect/${productId}`);
+          const productData = await response.json();
+          
+          // Log the result to the console
+          console.log('Product data:', productData);
+
+          // Store the selected product ID
+          selectedProductId = productId;
+
+          // Extract sentiment data from the response
+          const { positive, neutral, negative } = productData.data;
+
+          // Update the bar chart data
+          barData.datasets[0].data = [positive, negative, neutral];  // Update values
+
+          // Re-render the chart with updated data
+          myChart1.update();  // `myChart1` is the global variable holding the chart instance
+          
+          // Now update the Pie chart data for categories
+          const categoryCountResponse = await fetch(`/admin/aspect/${productId}/categories`);
+          const categoryCountData = await categoryCountResponse.json();
+          console.log('Category count data:', categoryCountData);
+          updatePieChartData(categoryCountData.data); // Update Pie chart with category counts
+
+        } catch (error) {
+          console.error('Error fetching product data:', error);
+        }
+      });
+    });
+  });
+
+  const updatePieChartData = (categoryCount) => {
+    console.log('Category Count Data:', categoryCount); // Log the categoryCount to check its structure
+  
+    // Ensure categoryCount is an array before mapping
+    if (!Array.isArray(categoryCount)) {
+      console.error('Expected categoryCount to be an array, but got:', categoryCount);
+      return;  // Exit the function if categoryCount is not an array
+    }
+  
+    // Map the data correctly based on your structure
+    const labels = categoryCount.map(item => item.category); // Get the category name (labels)
+    const data = categoryCount.map(item => item.count); // Get the count (data)
+  
+    console.log('Updated Labels:', labels);
+    console.log('Updated Data:', data);
+  
+    // Update the Pie chart data
+    pieData.labels = labels;           // Set the labels as category names
+    pieData.datasets[0].data = data;   // Set the data as counts
+  
+    // Update the chart to reflect new data
+    myChart2.update();
+  };
+
+  const updateRadarChartData = async (category) => {
+    try {
+      const response = await fetch(`/admin/aspect/${selectedProductId}/sentiment?category=${category}`);
+      const sentimentData = await response.json();
+  
+      console.log('Category Sentiment Data:', sentimentData);
+  
+      // Check if the sentiment data is correctly structured
+      if (sentimentData && sentimentData.data[0].sentiment) {
+        const { positive, neutral, negative } = sentimentData.data[0].sentiment;
+  
+        console.log('Parsed Sentiment:', { positive, neutral, negative });
+  
+        // Find the maximum sentiment value to dynamically set the max for the radar chart
+        const maxSentimentValue = Math.max(positive, neutral, negative);
+  
+        console.log('Max Sentiment Value:', maxSentimentValue);
+  
+        // Update radar chart options dynamically to adjust the max value
+        radarConfig.options.scales.r.max = maxSentimentValue + 10;  // Add a buffer of 10 for better visualization
+  
+        // Ensure the radar chart's datasets are updated correctly
+        radarData.datasets[0].data = [positive, negative, neutral];  // Update the radar data
+  
+        console.log('Updated Radar Data:', radarData);
+  
+        // Explicitly update the radar chart
+        myChart3.data = radarData;  // Ensure that the chart data is set
+        myChart3.update();  // Re-render the radar chart with updated data
+  
+        // Update the chart configuration with the new max value
+        myChart3.options = radarConfig.options;
+        myChart3.update();
+      } else {
+        console.error('Sentiment data is missing or not structured as expected:', sentimentData);
+      }
+    } catch (error) {
+      console.error('Error fetching sentiment data:', error);
+    }
+  };
+</script>
+
+

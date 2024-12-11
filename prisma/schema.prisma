@@ -175,9 +175,12 @@ model Review {
   userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
-
   book Book @relation(fields: [bookId], references: [id])
   user User @relation(fields: [userId], references: [id])
+  category String
+  aspect String?
+  overallSentiment String?
+  scores Json?
 }
 
 model About {

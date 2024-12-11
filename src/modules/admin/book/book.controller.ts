@@ -35,15 +35,18 @@ export class BookController {
 
   @Post('create')
   async create(@Req() req: Request, @Res() res: Response) {
-    this.logger.log('Create book');
+    console.log('Request body before creating book:', req.body); // Log the request body
     try {
-      let createData = plainToInstance(CreateBookDto, req.body);
+      const createData = plainToInstance(CreateBookDto, req.body);
+      console.log('CreateBookDto:', createData); // Log the mapped DTO
       await this.bookService.create(createData);
       return res.redirect('/admin/book');
     } catch (error) {
-      console.log('errro create book', error);
+      console.log('Error creating book:', error); // Log any errors
     }
   }
+  
+  
 
   @Get()
   @Render('adminPage')
@@ -133,9 +136,12 @@ export class BookController {
   @UseInterceptors(FileInterceptor('file'))
   uploadImage(@UploadedFile() file: Express.Multer.File) {
     try {
-      return this.cloudinaryService.uploadFile(file);
+         return this.cloudinaryService.uploadFile(file);
     } catch (error) {
-      console.log('upload error: ', error);
-    }
-  }
+   console.log('upload error: ', error);
+   }
+   }
+   
+  
 }
+

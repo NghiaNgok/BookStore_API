@@ -7,7 +7,7 @@ import { ResponseReviewDto } from 'src/dtos/review/response-list-review.dto';
 import { ReviewEntity } from 'src/entities/review.entity';
 import { JwtAuthGuard } from 'src/modules/auth/guard/jwt-auth.guard';
 import { ReviewService } from 'src/shared/services/review/review.service';
-
+import { SentimentSummaryDto } from 'src/entities/sentiment-summary.dto';
 @Resolver(() => ReviewEntity)
 export class ReviewResolver {
   constructor(private readonly reviewService: ReviewService) {}
@@ -30,4 +30,12 @@ export class ReviewResolver {
       throw new Error('Failed to fetch review');
     }
   }
+  @Query(() => SentimentSummaryDto)
+  async getSentimentSummary(@Args('bookId', { type: () => String }) bookId: string): Promise<SentimentSummaryDto> {
+    return this.reviewService.getSentimentSummary(bookId);
+  }
+
+  
 }
+
+

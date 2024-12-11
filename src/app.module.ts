@@ -10,11 +10,11 @@ import { CloudinaryModule } from './shared/cloudinary/cloudinary.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuthService } from './shared/services/auth/auth.service';
 import { AuthResolver } from './modules/auth/auth.resolver';
-// import { LocalStrategy } from './modules/auth/strategies/local.strategy';
 import { JwtStrategy } from './modules/auth/strategies/jwt.strategy';
 import { UserService } from './shared/services/user/user.service';
 import { UserRepository } from './shared/services/user/user.repository';
 import { SessionMiddleware } from './modules/auth/middleware/session.middleware';
+import { AspectModule } from './modules/admin/aspect/aspect.module'; // Import AspectModule
 
 @Module({
   imports: [
@@ -29,6 +29,7 @@ import { SessionMiddleware } from './modules/auth/middleware/session.middleware'
     CustomerModule,
     CloudinaryModule,
     AuthModule,
+    AspectModule, // Add AspectModule here
   ],
   providers: [
     providePrismaClientExceptionFilter(),
@@ -41,6 +42,4 @@ import { SessionMiddleware } from './modules/auth/middleware/session.middleware'
   controllers: [],
   exports: [AuthService],
 })
-export class AppModule {
-
-}
+export class AppModule {}

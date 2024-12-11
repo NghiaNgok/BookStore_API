@@ -1,5 +1,6 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { ReviewEntity } from 'src/entities/review.entity';
+import { SentimentScores } from 'src/entities/sentiment-scores.types';
 
 @ObjectType()
 export class ResponseReviewDto {
@@ -7,14 +8,20 @@ export class ResponseReviewDto {
   list: [ReviewEntity];
 
   @Field((type) => Int)
-  totalPages: Number;
+  totalPages: number;
 
   @Field((type) => Int)
-  currentPage: Number;
+  currentPage: number;
 
   @Field((type) => Int)
-  totalProducts: Number;
+  totalProducts: number;
 
   @Field((type) => Int)
-  limit: Number;
+  limit: number;
+
+  @Field(() => String, { nullable: true })
+  overallSentiment?: string;  // Add field for overall sentiment
+
+  @Field(() => SentimentScores, { nullable: true })
+  scores?: SentimentScores;
 }

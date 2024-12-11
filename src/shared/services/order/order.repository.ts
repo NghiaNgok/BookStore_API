@@ -53,4 +53,25 @@ export class OrderRepository {
     return this.prisma.order.update({ where: id, data: data });
   }
 
+  // Thêm hàm lấy top 3 bookId xuất hiện nhiều nhất trong OrderItem
+  async getTop3Products(): Promise<any[]> {
+    const topProducts = await this.prisma.orderItem.groupBy({
+      by: ['bookId'],
+      _count: {
+        bookId: true, // Đếm số lần xuất hiện của bookId
+      },
+      orderBy: {
+        _count: {
+          bookId: 'desc', // Sắp xếp theo số lần xuất hiện giảm dần
+        },
+      },
+      take: 3, // Chỉ lấy top 3 kết quả
+    });
+
+    // Trả về thông tin cần thiết
+    return topProducts.map(product => ({
+      bookId: product.bookId,
+      count: product._count.bookId,
+    }));
+  }
 }

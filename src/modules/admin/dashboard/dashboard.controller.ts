@@ -22,22 +22,34 @@ export class DashboardController {
   async loadPage() {
     this.logger.log('load dashboard');
     try {
-      const orders = await this.orderService.laodForAdmin();
+      const orders = await this.orderService.loadForAdmin();
       const countOrder = await this.orderService.countForAdmin();
       const users = await this.userService.loadForDashboard();
       const product = await this.bookService.loadForDashboardAdmin();
-      const topSaler = await this.bookService.findAll({
-        sortByEnum: SortBookByEnum.POPULAR,
-        limit: 5,
-        page: 1,
-      });
-
-      const topCid = topSaler.list.map((item) => item.categoryId);
+      
+      const test = await this.orderService.getTop3Products();
+  
+      // Duyệt qua mảng và tạo một mảng mới chỉ chứa bookDetails
+      const topSaler = await Promise.all(
+        test.map(async (product) => {
+          const bookId = product.bookId;
+  
+          // Gọi tới bookService.findOne và lấy bookDetails
+          const bookDetails = await this.bookService.findOne(bookId);
+  
+          return bookDetails; // Trả về bookDetails vào mảng
+        })
+      );
+  
+  
+      // Truy cập trực tiếp vào mảng topSaler để lấy categoryId
+      const topCid = topSaler.map((item) => item.categoryId);  // Thay đổi ở đây
       const topCategory = await this.categoryService.loadForDashboard(topCid);
+  
       const totalPrice = orders
         .map((order) => order.totalPrice)
         .reduce((acc, price) => acc + price, 0);
-
+  console.log(orders)
       const dashboard = {
         totalPrice: totalPrice,
         count: {
@@ -45,9 +57,10 @@ export class DashboardController {
           order: countOrder,
           book: product,
         },
-        topSaler: topSaler.list,
+        topSaler: topSaler,  // Sử dụng topSaler mà không cần list
         topCategories: topCategory
       };
+  
       return {
         module: 'dashboard',
         dashboard: dashboard,
@@ -56,6 +69,7 @@ export class DashboardController {
       return { errMessage: error };
     }
   }
+  
 
   @Get('chart')
   async loadChart(@Res() res: Response) {

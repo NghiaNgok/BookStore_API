@@ -68,4 +68,6 @@ export class OrderEntity {
 
   @Field(() => [OrderItemEntity])
   OrderDetail: OrderItemEntity[];
+  items: any;
+  products: any;
 }

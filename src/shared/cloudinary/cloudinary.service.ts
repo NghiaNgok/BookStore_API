@@ -1,5 +1,3 @@
-// cloudinary.service.ts
-
 import { Injectable } from '@nestjs/common';
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryResponse } from './cloudinary-response';
@@ -9,15 +7,16 @@ const streamifier = require('streamifier');
 export class CloudinaryService {
   uploadFile(file: Express.Multer.File): Promise<CloudinaryResponse> {
     return new Promise<CloudinaryResponse>((resolve, reject) => {
-    //writes down the uploader as a stream
       const uploadStream = cloudinary.uploader.upload_stream(
         (error, result) => {
-          if (error) return reject(error);
+          if (error) {
+            console.error('Cloudinary upload error:', error);
+            return reject(error);
+          }
+          console.log('Cloudinary upload success:', result); // Log upload success
           resolve(result);
         },
       );
-
-      //convert any Buffer or string into a Readable Stream
       streamifier.createReadStream(file.buffer).pipe(uploadStream);
     });
   }

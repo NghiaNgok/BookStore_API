@@ -119,10 +119,8 @@ export class OrderService {
     return plainToInstance(OrderEntity, result);
   }
 
-  async laodForAdmin() {
-    const result = await this.orderRepository.findMany({where: {
-      status: OrderStatus.DONE
-    }});
+  async loadForAdmin() {
+    const result = await this.orderRepository.findMany({});
     return plainToInstance(OrderEntity, result);
   }
 
@@ -142,7 +140,6 @@ export class OrderService {
             gte: new Date(`${startDateOfMonth}T00:00:00`),
             lte: new Date(`${endDateOfMonth}T23:59:59`),
           },
-          status: OrderStatus.DONE,
         },
       });
       const totalPriceInMonth = result.reduce(
@@ -154,4 +151,10 @@ export class OrderService {
       console.log(error);
     }
   }
+
+   // Hàm gọi repository để lấy top 3 bookId xuất hiện nhiều nhất
+   async getTop3Products(): Promise<any[]> {
+    return this.orderRepository.getTop3Products();
+  }
+
 }
