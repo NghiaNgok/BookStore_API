@@ -5,7 +5,7 @@
         <div class="d-flex justify-content-between">
           <div class="p-3">
             <h5>DOANH THU</h5>
-            <p class="fs-5">$<span id="revernue">
+            <p class="fs-5"><span id="revernue">
               <%= dashboard.totalPrice %>
             </span></p>
           </div>
@@ -176,7 +176,7 @@
                 >
                   <%= item.title %>
                 </span>
-                <div class="fw-bold">$<%= item.price %></div>
+                <div class="fw-bold"><%= item.price %></div>
               </div>
             </div>
           </li>
@@ -223,6 +223,36 @@
     }
   });
 })();
+// Function to format numbers to VNĐ
+function formatToVND(amount) {
+  if (isNaN(amount)) return "";
+  return amount.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
+}
+
+// Function to format specific elements in the dashboard
+function formatDashboardPrices() {
+  // Format total revenue
+  const revenueElement = document.getElementById("revernue");
+  if (revenueElement) {
+    const rawRevenue = parseInt(revenueElement.textContent.trim(), 10);
+    if (!isNaN(rawRevenue)) {
+      revenueElement.textContent = formatToVND(rawRevenue);
+    }
+  }
+
+  // Format top sellers prices
+  const topSellerPrices = document.querySelectorAll(".list-group-item .fw-bold");
+  topSellerPrices.forEach((priceElement) => {
+    const rawPrice = parseInt(priceElement.textContent.trim().replace("$", ""), 10);
+    if (!isNaN(rawPrice)) {
+      priceElement.textContent = formatToVND(rawPrice);
+    }
+  });
+}
+
+// Call the function when the DOM content is loaded
+document.addEventListener("DOMContentLoaded", formatDashboardPrices);
+
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

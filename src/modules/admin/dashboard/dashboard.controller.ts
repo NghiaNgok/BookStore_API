@@ -90,4 +90,24 @@ export class DashboardController {
       return { errMessage: error };
     }
   }
+ // API mới để lấy topSaler
+ @Get('top-saler')
+ async getTopSaler() {
+   this.logger.log('get top saler');
+   try {
+     const test = await this.orderService.getTop3Products();
+ 
+     const topSaler = await Promise.all(
+       test.map(async (product) => {
+         const bookId = product.bookId;
+         const bookDetails = await this.bookService.findOne(bookId);
+         return bookDetails;
+       })
+     );
+ 
+     return { s: 200, data: topSaler };
+   } catch (error) {
+     return { errMessage: error };
+   }
+ }
 }

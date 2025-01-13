@@ -114,7 +114,7 @@
           <th scope="col">Hình ảnh</th>
           <th scope="col">Tên sản phẩm</th>
           <th scope="col">Danh mục</th>
-          <th scope="col">Tác giả</th>
+        
           <th scope="col">Đánh giá</th>
           <th scope="col">Giá</th>
           <th scope="col">Trạng thái</th>
@@ -140,7 +140,7 @@
             </span>
           </td>
           <td class="w-2"><%= item.category.name %></td>
-          <td scope="w-2"><%= item.author.name %></td>
+       
           <td class="w-2">
             <% for (var j = 0; j < 5; j++) { %> 
               <% if (j < Math.floor(item.rate)) { %> 
@@ -460,21 +460,7 @@
                     <% }) %>
                   </select>
                 </div>
-                <div class="col-6">
-                  <label for="authorEdit" class="form-label">Shop</label>
-                  <select
-                    name="author"
-                    id="authorEdit"
-                    class="form-select"
-                    aria-label="Select author"
-                    required
-                  >
-                    <option>---</option>
-                    <% listAuthor.forEach((item) => { %>
-                    <option value="<%= item.id %>"><%= item.name %></option>
-                    <% }) %>
-                  </select>
-                </div>
+               
                 <div class="col-12">
                   <label for="price" class="form-label">Gía giảm tối thiểu</label>
                   <input

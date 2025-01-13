@@ -16,6 +16,11 @@ export class PromotionService {
   async create(
     createPromotionDTO: CreatePromotionDto,
   ): Promise<PromotionEntity> {
+    console.log(createPromotionDTO);
+  
+    // Đảm bảo bookId là một mảng
+    const bookIds = Array.isArray(createPromotionDTO.bookId) ? createPromotionDTO.bookId : [];
+  
     const result = await this.promotionRepository.create({
       data: {
         title: createPromotionDTO.title,
@@ -25,7 +30,7 @@ export class PromotionService {
         startDate: createPromotionDTO.startDate,
         expriedDate: createPromotionDTO.endDate,
         bookPromotion: {
-          create: createPromotionDTO.bookId.map((item) => ({
+          create: bookIds.map((item) => ({
             book: {
               connect: {
                 id: item,
@@ -35,8 +40,10 @@ export class PromotionService {
         },
       },
     });
+  
     return plainToInstance(PromotionEntity, result);
   }
+  
   async findAll(filter: FilterPromotionDto) {
     const itemPerPage: number = filter.limit || 5;
     const offset: number =

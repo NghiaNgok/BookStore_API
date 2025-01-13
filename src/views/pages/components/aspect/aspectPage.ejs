@@ -153,9 +153,9 @@
 
   // Data for Bar Chart (Sentiment Analysis)
   const barData = {
-    labels: ['Positive', 'Negative', 'Neutral'],
+    labels: ['Tích cực', 'Tiêu cực', 'Trung tính'],
     datasets: [{
-      label: 'Number of Comments',
+      label: 'Tổng số lượng bình luận',
       data: [0, 0, 0],  // Initial values; will be updated after API response
       backgroundColor: [
         'rgba(75, 192, 192, 0.2)', // Positive
@@ -189,9 +189,9 @@
   };
 
   const radarData = {
-    labels: ['Positive', 'Negative', 'Neutral'], // Sentiment categories
+    labels: ['Tích cực', 'Tiêu cực', 'Trung tính'], // Sentiment categories
     datasets: [{
-      label: 'Sentiment Category Analysis',
+      label: 'Phân tích cảm xúc theo danh mục',
       data: [30, 20, 50], // Example sentiment values, replace with actual data
       fill: true,
       backgroundColor: 'rgba(255, 99, 132, 0.2)', // Fill color

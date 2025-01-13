@@ -22,47 +22,55 @@ export class AspectService {
     return plainToInstance(SentimentSummaryDto, summary);
   }
 
- // Updated function to get sentiment summary by category for a specific bookId and optional category filter
- async getReviewSentimentOfCategory(bookId: string, category?: string): Promise<{ category: string, sentiment: SentimentSummaryDto }[]> {
-  const reviews = await this.reviewRepository.findMany({
-    where: { bookId },
-  });
-
-  if (!reviews || reviews.length === 0) {
-    return []; // Return empty array if no reviews are found
-  }
-
-  // If a category is provided, filter reviews by that category
-  const filteredReviews = category ? reviews.filter(review => review.category === category) : reviews;
-
-  // Group reviews by category
-  const categoryGroups = filteredReviews.reduce((acc, review) => {
-    const category = review.category;
-    if (!acc[category]) {
-      acc[category] = [];
+  async getReviewSentimentOfCategory(bookId: string, category?: string): Promise<{ category: string, sentiment: SentimentSummaryDto }[]> {
+    const reviews = await this.reviewRepository.findMany({
+      where: { bookId },
+    });
+  
+    if (!reviews || reviews.length === 0) {
+      return []; // Return empty array if no reviews are found
     }
-    acc[category].push(review);
-    return acc;
-  }, {});
-
-  // For each category, calculate sentiment summary (positive, neutral, negative)
-  const sentimentByCategory = Object.keys(categoryGroups).map((category) => {
-    const categoryReviews = categoryGroups[category];
-
-    const sentimentSummary = {
-      positive: categoryReviews.filter(review => review.overallSentiment === 'Positive').length,
-      neutral: categoryReviews.filter(review => review.overallSentiment === 'Neutral').length,
-      negative: categoryReviews.filter(review => review.overallSentiment === 'Negative').length,
-    };
-
-    return {
-      category,
-      sentiment: plainToInstance(SentimentSummaryDto, sentimentSummary),
-    };
-  });
-
-  return sentimentByCategory; // Return the final result with sentiment counts per category
-}
+  
+    // Map to store sentiment counts by category
+    const categorySentimentMap: Record<string, { positive: number, neutral: number, negative: number }> = {};
+  
+    reviews.forEach((review) => {
+      // Normalize and split categories in each review
+      const uniqueCategories = Array.from(
+        new Set(review.category.split(/[,;]/).map((cat) => cat.trim())) // Split and remove duplicates
+      );
+  
+      uniqueCategories.forEach((cat) => {
+        // If a category filter is provided, skip unrelated categories
+        if (category && !cat.toLowerCase().includes(category.toLowerCase())) {
+          return;
+        }
+  
+        // Initialize sentiment counts for this category if not present
+        if (!categorySentimentMap[cat]) {
+          categorySentimentMap[cat] = { positive: 0, neutral: 0, negative: 0 };
+        }
+  
+        // Increment sentiment count based on the review's overall sentiment
+        if (review.overallSentiment === 'Positive') {
+          categorySentimentMap[cat].positive += 1;
+        } else if (review.overallSentiment === 'Neutral') {
+          categorySentimentMap[cat].neutral += 1;
+        } else if (review.overallSentiment === 'Negative') {
+          categorySentimentMap[cat].negative += 1;
+        }
+      });
+    });
+  
+    // Convert the map into an array of results
+    const sentimentByCategory = Object.keys(categorySentimentMap).map((cat) => ({
+      category: cat,
+      sentiment: plainToInstance(SentimentSummaryDto, categorySentimentMap[cat]),
+    }));
+  
+    return sentimentByCategory; // Return the final result with sentiment counts per category
+  }
+  
 
 async getReviewCategoryCounts(bookId: string): Promise<{ category: string, count: number }[]> {
   // Fetch all reviews for the given bookId
@@ -75,12 +83,12 @@ async getReviewCategoryCounts(bookId: string): Promise<{ category: string, count
   // Initialize an accumulator to store category counts
   const categoryCounts: { [key: string]: number } = {};
 
-  // Iterate through each review and split combined categories
+  // Iterate through each review
   reviews.forEach((review) => {
-    const categories = review.category.split(','); // Split the combined categories by comma
+    // Split the combined categories by comma and use a Set to ensure uniqueness
+    const uniqueCategories = new Set(review.category.split(',').map((category) => category.trim()));
 
-    categories.forEach((category) => {
-      category = category.trim(); // Remove any leading or trailing spaces
+    uniqueCategories.forEach((category) => {
       if (categoryCounts[category]) {
         categoryCounts[category] += 1; // Increment the count for each category
       } else {
@@ -97,6 +105,7 @@ async getReviewCategoryCounts(bookId: string): Promise<{ category: string, count
 
   return result;
 }
+
 
 
   // Get all unique review categories across all reviews

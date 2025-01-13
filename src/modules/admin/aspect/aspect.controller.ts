@@ -140,6 +140,7 @@ console.log('meow',getReviewSentimentOfCategory)
  
    try {
      const sentimentByCategory = await this.aspectService.getReviewSentimentOfCategory(id, category);
+     console.log(sentimentByCategory);
  
      if (!sentimentByCategory || sentimentByCategory.length === 0) {
        return res.send({

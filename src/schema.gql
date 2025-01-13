@@ -159,7 +159,7 @@ type PromotionEntity {
 
 type Query {
   findAllAuthors: [AuthorEntity!]!
-  findAllBooks(author: [String!], category: [String!], isActive: Boolean = true, limit: Int, page: Int, rate: [Int!], sortByEnum: String, title: String): ResponseBookDto!
+  findAllBooks(author: [String!], category: [String!], isActive: Boolean = true, isTopSaler: Boolean = true, limit: Int, page: Int, rate: [Int!], sortByEnum: String, title: String): ResponseBookDto!
   findAllCategories: [Category!]!
   findOneAbout: AboutEntity!
   getAllReview(bookId: String, bookTitle: String, category: String, limit: Int, page: Int, rate: [Int!]): ResponseReviewDto!

@@ -55,4 +55,10 @@ export class FilterBookDto {
   @IsNumber()
   @IsOptional()
   limit?: number;
+
+  
+  @Field(() => Boolean, { nullable: true, defaultValue: true })
+  @IsBoolean()
+  @IsOptional()
+  isTopSaler?: boolean;
 }
